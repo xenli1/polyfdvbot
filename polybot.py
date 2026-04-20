@@ -13,7 +13,7 @@ POLL_MINUTES    = 30        # change to 15 or 30 to poll less often
 
 KNOWN_FILE = "known_markets.json"
 API_URL    = "https://gamma-api.polymarket.com/events"
-KEYWORDS   = ["fdv", "launch", "pre-market", "sale", "commitments", "listing", "ipo", "token"]
+KEYWORDS   = ["fdv", "launch", "pre-market", "sale", "commitments", "listing", "ipo", "token", "clearing_price", "IPO", "hit"]
 
 def is_premarket(event):
     title = event.get("title", "").lower()
