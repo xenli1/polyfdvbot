@@ -13,6 +13,11 @@ POLL_MINUTES    = 30        # change to 15 or 30 to poll less often
 
 KNOWN_FILE = "known_markets.json"
 API_URL    = "https://gamma-api.polymarket.com/events"
+KEYWORDS   = ["fdv", "launch", "pre-market", "sale", "commitments", "listing", "ipo", "token"]
+
+def is_premarket(event):
+    title = event.get("title", "").lower()
+    return any(kw in title for kw in KEYWORDS)
 
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
@@ -47,7 +52,8 @@ def check():
     try:
         events  = fetch_events()
         known   = load_known()
-        new     = [e for e in events if e["slug"] not in known]
+
+        new = [e for e in events if e["slug"] not in known and is_premarket(e)]
 
         for e in new:
             title = e.get("title", "New market")
@@ -60,6 +66,9 @@ def check():
             )
             send_telegram(msg)
             print(f"  ✅ Alerted: {title}")
+
+        if not new:
+            print("  No new pre-market events.")
 
         all_slugs = {e["slug"] for e in events}
         save_known(known | all_slugs)
